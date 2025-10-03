@@ -1,21 +1,6 @@
-`
 ## Overview
 
 This repository contains Python scripts, Jupyter notebooks, and preprocessed CSVs for **NASA’s CMAPSS (Commercial Modular Aero-Propulsion System Simulation) dataset**, specifically FD001. The goal of this milestone is to **load, clean, preprocess, and engineer features** from the dataset, preparing it for predictive modeling of **Remaining Useful Life (RUL)** of engines.
-
----
-
-## Table of Contents
-
-* [Project Structure](#project-structure)
-* [Dataset](#dataset)
-* [Preprocessing Steps](#preprocessing-steps)
-* [Feature Engineering](#feature-engineering)
-* [Sequence Generation](#sequence-generation)
-* [RUL Calculation](#rul-calculation)
-* [How to Use](#how-to-use)
-* [Evaluation](#evaluation)
-* [Future Work](#future-work)
 
 ---
 
@@ -55,7 +40,7 @@ The CMAPSS FD001 dataset contains **multisensor engine data** collected from tur
 
    ```python
    train["RUL"] = train.groupby("engine_id")["cycle"].transform(max) - train["cycle"]
-````
+   ````
 
 3. **Data Cleaning:** Check for missing values and remove duplicates.
 4. **Save Preprocessed CSV:** The cleaned and feature-ready training set is saved as `train_FD001_preprocessed.csv`.
