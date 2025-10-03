@@ -1,3 +1,4 @@
+`
 ## Overview
 
 This repository contains Python scripts, Jupyter notebooks, and preprocessed CSVs for **NASA’s CMAPSS (Commercial Modular Aero-Propulsion System Simulation) dataset**, specifically FD001. The goal of this milestone is to **load, clean, preprocess, and engineer features** from the dataset, preparing it for predictive modeling of **Remaining Useful Life (RUL)** of engines.
@@ -21,7 +22,8 @@ This repository contains Python scripts, Jupyter notebooks, and preprocessed CSV
 ## Project Structure
 
 ```
-C:\MileStone_1\
+
+C:\MileStone_1
 │
 ├─ conversion.py                    # Script to convert raw text files to CSV
 ├─ Milestone1.ipynb                 # Notebook for Milestone 1
@@ -29,7 +31,8 @@ C:\MileStone_1\
 ├─ test_FD001.csv                   # Test dataset CSV
 ├─ RUL_FD001.csv                    # Test set RUL values
 ├─ train_FD001_preprocessed.csv     # Fully preprocessed training dataset
-```
+
+````
 
 ---
 
@@ -52,7 +55,8 @@ The CMAPSS FD001 dataset contains **multisensor engine data** collected from tur
 
    ```python
    train["RUL"] = train.groupby("engine_id")["cycle"].transform(max) - train["cycle"]
-   ```
+````
+
 3. **Data Cleaning:** Check for missing values and remove duplicates.
 4. **Save Preprocessed CSV:** The cleaned and feature-ready training set is saved as `train_FD001_preprocessed.csv`.
 
@@ -128,7 +132,6 @@ This will generate `train_FD001.csv`, `test_FD001.csv`, and `RUL_FD001.csv`.
 * **Documentation:** Each step is explained in `conversion.py` and `Milestone1.ipynb`.
 
 ---
-
 
 ### References
 
