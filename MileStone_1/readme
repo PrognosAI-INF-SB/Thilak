@@ -1,0 +1,139 @@
+## Overview
+
+This repository contains Python scripts, Jupyter notebooks, and preprocessed CSVs for **NASA’s CMAPSS (Commercial Modular Aero-Propulsion System Simulation) dataset**, specifically FD001. The goal of this milestone is to **load, clean, preprocess, and engineer features** from the dataset, preparing it for predictive modeling of **Remaining Useful Life (RUL)** of engines.
+
+---
+
+## Table of Contents
+
+* [Project Structure](#project-structure)
+* [Dataset](#dataset)
+* [Preprocessing Steps](#preprocessing-steps)
+* [Feature Engineering](#feature-engineering)
+* [Sequence Generation](#sequence-generation)
+* [RUL Calculation](#rul-calculation)
+* [How to Use](#how-to-use)
+* [Evaluation](#evaluation)
+* [Future Work](#future-work)
+
+---
+
+## Project Structure
+
+```
+C:\MileStone_1\
+│
+├─ conversion.py                    # Script to convert raw text files to CSV
+├─ Milestone1.ipynb                 # Notebook for Milestone 1
+├─ train_FD001.csv                  # Training dataset CSV (optional intermediate)
+├─ test_FD001.csv                   # Test dataset CSV
+├─ RUL_FD001.csv                    # Test set RUL values
+├─ train_FD001_preprocessed.csv     # Fully preprocessed training dataset
+```
+
+---
+
+## Dataset
+
+The CMAPSS FD001 dataset contains **multisensor engine data** collected from turbofan engines under different operating conditions and fault modes.
+
+* **Training set:** Engine-wise sensor readings for multiple cycles until failure (`train_FD001_preprocessed.csv`).
+* **Test set:** Engine-wise sensor readings for a partial lifespan (`test_FD001.csv`).
+* **RUL values:** True Remaining Useful Life for the test set (`RUL_FD001.csv`).
+* **Sensors:** 21 sensor readings (`s1` to `s21`) and 3 operational settings (`op_setting_1` to `op_setting_3`).
+* **Target:** Remaining Useful Life (RUL) of each engine.
+
+---
+
+## Preprocessing Steps
+
+1. **Text-to-CSV Conversion:** If starting from raw text files, run `conversion.py` to generate intermediate CSVs (`train_FD001.csv`, `test_FD001.csv`, `RUL_FD001.csv`).
+2. **RUL Calculation:** For training data, RUL is computed per engine:
+
+   ```python
+   train["RUL"] = train.groupby("engine_id")["cycle"].transform(max) - train["cycle"]
+   ```
+3. **Data Cleaning:** Check for missing values and remove duplicates.
+4. **Save Preprocessed CSV:** The cleaned and feature-ready training set is saved as `train_FD001_preprocessed.csv`.
+
+---
+
+## Feature Engineering
+
+* Drop non-essential columns (`engine_id`, `cycle`, `RUL`) for model input.
+* Retain sensor readings (`s1-s21`) and operational settings (`op_setting_1-3`) as features.
+* All features are numerical and ready for scaling or normalization if needed.
+
+---
+
+## Sequence Generation
+
+* **Sliding window approach:** Generates sequences of length `window_size` (default 30 cycles).
+* Each sequence represents **temporal sensor readings** for one engine.
+* The **target RUL** corresponds to the last timestep of each sequence.
+
+Example:
+
+| Cycle | s1  | s2  | ... | RUL |
+| ----- | --- | --- | --- | --- |
+| 1     | 0.1 | 0.2 | ... | 149 |
+| 2     | 0.2 | 0.1 | ... | 148 |
+| ...   | ... | ... | ... | ... |
+| 30    | 0.3 | 0.4 | ... | 120 |
+
+* Output shapes:
+
+```python
+X.shape -> (num_sequences, window_size, num_features)
+y.shape -> (num_sequences,)
+```
+
+---
+
+## RUL Calculation
+
+* **Formula:**
+
+  ```
+  RUL = max(cycle for engine_id) - current cycle
+  ```
+* Ensures correct target labeling for supervised learning.
+* Test set RUL is stored in `RUL_FD001.csv`.
+
+---
+
+## How to Use
+
+1. **Text Conversion (Optional):** If you have raw text files, run:
+
+```bash
+python C:\MileStone_1\conversion.py
+```
+
+This will generate `train_FD001.csv`, `test_FD001.csv`, and `RUL_FD001.csv`.
+
+2. **Preprocessed Dataset:** Use `train_FD001_preprocessed.csv` for model training.
+
+3. **Notebook:** Open `Milestone1.ipynb` in Jupyter Notebook for interactive exploration and sequence generation.
+
+4. Preprocessed sequences (`X`, `y`) are ready for predictive modeling (e.g., LSTM, GRU, or 1D-CNN).
+
+---
+
+## Evaluation
+
+* **Data integrity:** Missing values and duplicates removed.
+* **Correctness of sequences:** Engine-wise rolling windows with accurate RUL targets.
+* **RUL accuracy:** Verified against max cycle per engine.
+* **Documentation:** Each step is explained in `conversion.py` and `Milestone1.ipynb`.
+
+---
+
+
+### References
+
+* [NASA CMAPSS Dataset](https://ti.arc.nasa.gov/tech/dash/pcoe/prognostic-data-repository/)
+* Saxena, A., & Goebel, K. (2008). *Turbofan Engine Degradation Simulation Data Set.*
+
+---
+
